@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate serde;
 extern crate reqwest;
-use reqwest::Error;
+//use reqwest::Error;
 
 #[derive(Deserialize, Debug)]
 struct User {
@@ -9,7 +9,8 @@ struct User {
     id: u32,
 }
 
-fn main() -> Result<(), Error> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     static APP_USER_AGENT: &str = concat!(
         env!("CARGO_PKG_NAME"),
         "/",
@@ -21,13 +22,13 @@ fn main() -> Result<(), Error> {
                               repo = "rust-cookbook");
     println!("{}", request_url);
 
-    let client = reqwest::blocking::Client::builder()
+    let client = reqwest::Client::builder()
         .user_agent(APP_USER_AGENT)
         .build()?;
-    let response = client.get(&request_url).send()?;
+    let response = client.get(&request_url).send().await?;
     //println!("{:#?}", response);
 
-    let users: Vec<User> = response.json()?;
+    let users: Vec<User> = response.json().await?;
     println!("{:?}", users);
     Ok(())
 }
