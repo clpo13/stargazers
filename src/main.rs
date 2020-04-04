@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate serde;
 extern crate reqwest;
-//use reqwest::Error;
 
 #[derive(Deserialize, Debug)]
 struct User {
@@ -26,7 +25,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .user_agent(APP_USER_AGENT)
         .build()?;
     let response = client.get(&request_url).send().await?;
-    //println!("{:#?}", response);
 
     let users: Vec<User> = response.json().await?;
     println!("{:?}", users);
