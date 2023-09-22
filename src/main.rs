@@ -16,10 +16,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         env!("CARGO_PKG_VERSION"),
     );
 
-    let request_url = format!("https://api.github.com/repos/{owner}/{repo}/stargazers",
-                              owner = "rust-lang-nursery",
-                              repo = "rust-cookbook");
-    println!("{}", request_url);
+    static OWNER: &str = "rust-lang-nursery";
+    static REPO: &str = "rust-cookbook";
+
+    let request_url = format!("https://api.github.com/repos/{OWNER}/{REPO}/stargazers");
 
     let client = reqwest::Client::builder()
         .user_agent(APP_USER_AGENT)
@@ -27,6 +27,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let response = client.get(&request_url).send().await?;
 
     let users: Vec<User> = response.json().await?;
-    println!("{:?}", users);
+
+    println!("First 30 stargazers of {OWNER}/{REPO}:");
+    for user in users.iter() {
+        println!("  {} (id: {})", user.login, user.id);
+    }
+
     Ok(())
 }
